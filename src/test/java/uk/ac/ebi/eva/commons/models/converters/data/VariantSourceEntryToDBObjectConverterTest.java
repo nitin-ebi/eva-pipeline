@@ -25,7 +25,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.ac.ebi.eva.commons.models.data.VariantSourceEntry;
-import uk.ac.ebi.eva.commons.models.mongo.entity.subdocuments.VariantSourceEntryMongo;
+import uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo;
 import uk.ac.ebi.eva.test.configuration.MongoOperationConfiguration;
 
 import java.util.Arrays;
@@ -33,10 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static uk.ac.ebi.eva.commons.models.mongo.entity.subdocuments.VariantSourceEntryMongo.ATTRIBUTES_FIELD;
-import static uk.ac.ebi.eva.commons.models.mongo.entity.subdocuments.VariantSourceEntryMongo.CHARACTER_TO_REPLACE_DOTS;
-import static uk.ac.ebi.eva.commons.models.mongo.entity.subdocuments.VariantSourceEntryMongo.FILEID_FIELD;
-import static uk.ac.ebi.eva.commons.models.mongo.entity.subdocuments.VariantSourceEntryMongo.STUDYID_FIELD;
+import static uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo.ATTRIBUTES_FIELD;
+import static uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo.CHARACTER_TO_REPLACE_DOTS;
+import static uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo.FILEID_FIELD;
+import static uk.ac.ebi.eva.commons.mongodb.entities.subdocuments.VariantSourceEntryMongo.STUDYID_FIELD;
 
 /**
  * Tests automatic conversion from {@link VariantSourceEntryMongo} to {@link Document}
@@ -62,6 +62,7 @@ public class VariantSourceEntryToDBObjectConverterTest {
         file.addAttribute("QUAL", "0.01");
         file.addAttribute("AN", "2");
         file.addAttribute("MAX.PROC", "2");
+        file.setFormat("gzip");
 
         Map<String, String> na001 = new HashMap<>();
         na001.put("GT", "0/0");
@@ -82,11 +83,12 @@ public class VariantSourceEntryToDBObjectConverterTest {
                 .append("MAX" + CHARACTER_TO_REPLACE_DOTS + "PROC", "2");
         mongoFile.append(ATTRIBUTES_FIELD, attributes);
 
-        mongoFileWithIds = new Document((this.mongoFile));
+        mongoFileWithIds = new Document(this.mongoFile);
         mongoFileWithIds.put("samp", new Document());
         ((Document) mongoFileWithIds.get("samp")).put("def", "0/0");
         ((Document) mongoFileWithIds.get("samp")).put("0/1", Arrays.asList(indexNa002));
         ((Document) mongoFileWithIds.get("samp")).put("1/1", Arrays.asList(indexNa003));
+        mongoFileWithIds.put("fm", "gzip");
     }
 
     @Test
